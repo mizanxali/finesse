@@ -1,30 +1,53 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const DrakeHotlineBling = await hre.ethers.getContractFactory(
+    "DrakeHotlineBling"
+  );
+  const drakeHotlineBling = await DrakeHotlineBling.deploy();
+  await drakeHotlineBling.deployed();
+  console.log("DrakeHotlineBling deployed at: ", drakeHotlineBling.address);
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  const DrakeInMyFeelings = await hre.ethers.getContractFactory(
+    "DrakeInMyFeelings"
+  );
+  const drakeInMyFeelings = await DrakeInMyFeelings.deploy();
+  await drakeInMyFeelings.deployed();
+  console.log("DrakeInMyFeelings deployed at: ", drakeInMyFeelings.address);
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const EminemLoseYourself = await hre.ethers.getContractFactory(
+    "EminemLoseYourself"
+  );
+  const eminemLoseYourself = await EminemLoseYourself.deploy();
+  await eminemLoseYourself.deployed();
+  console.log("EminemLoseYourself deployed at: ", eminemLoseYourself.address);
 
-  await lock.deployed();
+  const EminemRapGod = await hre.ethers.getContractFactory("EminemRapGod");
+  const eminemRapGod = await EminemRapGod.deploy();
+  await eminemRapGod.deployed();
+  console.log("EminemRapGod deployed at: ", eminemRapGod.address);
 
+  const TaylorSwiftBlankSpace = await hre.ethers.getContractFactory(
+    "TaylorSwiftBlankSpace"
+  );
+  const taylorSwiftBlankSpace = await TaylorSwiftBlankSpace.deploy();
+  await taylorSwiftBlankSpace.deployed();
   console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    "TaylorSwiftBlankSpace deployed at: ",
+    taylorSwiftBlankSpace.address
+  );
+
+  const TaylorSwiftShakeItOff = await hre.ethers.getContractFactory(
+    "TaylorSwiftShakeItOff"
+  );
+  const taylorSwiftShakeItOff = await TaylorSwiftShakeItOff.deploy();
+  await taylorSwiftShakeItOff.deployed();
+  console.log(
+    "TaylorSwiftShakeItOff deployed at: ",
+    taylorSwiftShakeItOff.address
   );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
