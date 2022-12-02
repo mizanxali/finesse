@@ -1,4 +1,4 @@
-// contracts/EminemLoseYourself.sol
+// contracts/EminemRapGod.sol
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.17;
@@ -6,7 +6,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
-contract EminemLoseYourself is ERC20, ERC20Capped {
+contract EminemRapGod is ERC20, ERC20Capped {
     address payable public owner;
     string public artistName;
     string public songName;
@@ -18,14 +18,14 @@ contract EminemLoseYourself is ERC20, ERC20Capped {
 
     //constructor
     constructor()
-        ERC20("EminemLoseYourself", "EMLY")
+        ERC20("EminemRapGod", "EMRG")
         ERC20Capped(100 * (10**decimals()))
     {
         owner = payable(msg.sender);
         artistName = "Eminem";
-        songName = "Lose Yourself";
-        geniusID = "207";
-        spotifyURI = "7MJQ9Nfxzh8LPZ9e9u68Fq";
+        songName = "Rap God";
+        geniusID = "235729";
+        spotifyURI = "6or1bKJiZ06IlK0vFvY75k";
         artistAddress = payable(address(0));
         isArtistVerified = false;
         _mint(owner, 100 * (10**decimals())); //mint 100 tokens(initial supply)
