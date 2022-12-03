@@ -26,6 +26,7 @@ import { useAuth } from '../context/AuthContext';
 import useNFTPort from '../hooks/useNFTPort';
 import useWalletBalance from '../hooks/useWalletBalance';
 import useWeb3Storage from '../hooks/useWeb3Storage';
+import Navbar from '../components/Navbar';
 
 const ArtistScreen = () => {
   const Router = useRouter();
@@ -227,9 +228,11 @@ const ArtistScreen = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <Navbar />
+
       <Modal scroll fullScreen closeButton {...diamondTierModalBindings}>
         <Modal.Header>
-          <Text id="modal-title" size={18}>
+          <Text color="secondary" id="modal-title" size={18}>
             Video Call with {artistName}
           </Text>
         </Modal.Header>
@@ -240,7 +243,7 @@ const ArtistScreen = () => {
 
       <Modal scroll fullScreen closeButton {...goldTierModalBindings}>
         <Modal.Header>
-          <Text id="modal-title" size={18}>
+          <Text color="secondary" id="modal-title" size={18}>
             Live Stream by {artistName}
           </Text>
         </Modal.Header>
@@ -263,15 +266,6 @@ const ArtistScreen = () => {
         />
       )}
 
-      {isConnected() ? (
-        <div className="text-center">
-          <Text h6>{signerAddress}</Text>
-        </div>
-      ) : (
-        <Button className="mx-auto" onClick={() => getSigner(provider)}>
-          Connect Wallet
-        </Button>
-      )}
       <div className="flex flex-row">
         <div className="w-3/4 px-12">
           <div className="flex flex-row">
@@ -286,10 +280,14 @@ const ArtistScreen = () => {
               </div>
             )}
             <div className="pl-10 flex-1">
-              <Text h1>{artistName}</Text>
+              <Text color="secondary" h1>
+                {artistName}
+              </Text>
               {isArtistVerified && artistAddress == signerAddress && (
                 <>
-                  <Text h4>This is you!</Text>
+                  <Text color="secondary" h4>
+                    This is you!
+                  </Text>
                   {!unreleasedSongURL && (
                     <div onClick={openTrackInput}>
                       <input
@@ -299,7 +297,11 @@ const ArtistScreen = () => {
                         accept="audio/*"
                         onChange={onTrackUpload}
                       />
-                      <Text h6 className="cursor-pointer hover:underline">
+                      <Text
+                        color="secondary"
+                        h6
+                        className="cursor-pointer hover:underline"
+                      >
                         Click here to upload your unreleased track for the
                         Silver Tier.
                       </Text>
@@ -323,7 +325,9 @@ const ArtistScreen = () => {
                   >
                     <Card.Header className="">Iron Tier</Card.Header>
                     <Card.Body className="bg-iron">
-                      <Text>Mint a personalized artist NFT.</Text>
+                      <Text color="secondary">
+                        Mint a personalized artist NFT.
+                      </Text>
                     </Card.Body>
                     {isConnected() &&
                       !isLoading &&
@@ -340,7 +344,7 @@ const ArtistScreen = () => {
                                 ) as string
                               }
                             >
-                              <Button size="xs" color="gradient">
+                              <Button color="gradient" size="xs">
                                 View NFT
                               </Button>
                             </a>
@@ -375,7 +379,7 @@ const ArtistScreen = () => {
                   >
                     <Card.Header className="">Bronze Tier</Card.Header>
                     <Card.Body className="bg-bronze">
-                      <Text>
+                      <Text color="secondary">
                         Mint one free NFT ticket to {artistName}'s next concert.
                       </Text>
                     </Card.Body>
@@ -394,12 +398,13 @@ const ArtistScreen = () => {
                                 ) as string
                               }
                             >
-                              <Button size="xs" color="gradient">
+                              <Button color="gradient" size="xs">
                                 View NFT
                               </Button>
                             </a>
                           ) : (
                             <Button
+                              color="gradient"
                               onClick={() => {
                                 setIsClaimingAnyTier(true);
                                 mintNFTConcertTicket(
@@ -412,7 +417,6 @@ const ArtistScreen = () => {
                                 });
                               }}
                               size="xs"
-                              color="gradient"
                             >
                               Claim
                             </Button>
@@ -429,7 +433,7 @@ const ArtistScreen = () => {
                   >
                     <Card.Header className="">Silver Tier</Card.Header>
                     <Card.Body className="bg-silver">
-                      <Text>
+                      <Text color="secondary">
                         Listen to an exclusive unreleased song from {artistName}
                         .
                       </Text>
@@ -439,9 +443,9 @@ const ArtistScreen = () => {
                       artistAddress != signerAddress && (
                         <Card.Footer className="flex justify-end">
                           <Button
+                            color="gradient"
                             onClick={playUnreleasedSong}
                             size="xs"
-                            color="gradient"
                           >
                             Claim
                           </Button>
@@ -457,7 +461,7 @@ const ArtistScreen = () => {
                   >
                     <Card.Header className="">Gold Tier</Card.Header>
                     <Card.Body className="bg-gold">
-                      <Text>
+                      <Text color="secondary">
                         Get access to a special Gold tier holders-only live
                         stream from {artistName}.
                       </Text>
@@ -467,9 +471,9 @@ const ArtistScreen = () => {
                       artistAddress != signerAddress && (
                         <Card.Footer className="flex justify-end">
                           <Button
+                            color="gradient"
                             onClick={() => setGoldTierModalVisible(true)}
                             size="xs"
-                            color="gradient"
                           >
                             Claim
                           </Button>
@@ -485,7 +489,7 @@ const ArtistScreen = () => {
                   >
                     <Card.Header className="">Platinum Tier</Card.Header>
                     <Card.Body className="bg-platinum">
-                      <Text>
+                      <Text color="secondary">
                         Get to chat with {artistName} via text messaging.
                       </Text>
                     </Card.Body>
@@ -494,9 +498,9 @@ const ArtistScreen = () => {
                       artistAddress != signerAddress && (
                         <Card.Footer className="flex justify-end">
                           <Button
+                            color="gradient"
                             onClick={openChatBox}
                             size="xs"
-                            color="gradient"
                           >
                             Claim
                           </Button>
@@ -512,7 +516,7 @@ const ArtistScreen = () => {
                   >
                     <Card.Header className="">Diamond Tier</Card.Header>
                     <Card.Body className="bg-diamond">
-                      <Text>
+                      <Text color="secondary">
                         Get on a 15 minute video call with {artistName}.
                       </Text>
                     </Card.Body>
@@ -536,14 +540,16 @@ const ArtistScreen = () => {
           </div>
         </div>
         <div className="w-1/4">
-          <Text h4>Your holdings in {artistName}'s songs</Text>
+          <Text color="secondary" h4>
+            Your holdings in {artistName}'s songs
+          </Text>
           {isLoading ? (
             <Loading />
           ) : (
             artistHoldings.map((holding) => {
               return (
-                <Text h6>
-                  <Link href={`/song/${holding.address}`}>
+                <Text color="secondary" h6>
+                  <Link color="secondary" href={`/song/${holding.address}`}>
                     <span className="cursor-pointer hover:underline">
                       {holding.title}
                     </span>
