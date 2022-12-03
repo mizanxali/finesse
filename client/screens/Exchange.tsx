@@ -78,20 +78,12 @@ const ExchangeScreen = () => {
       <Navbar />
 
       <div className="py-8 px-60">
-        <Text
-          color="secondary"
-          h1
-          className="text-center"
-          css={{
-            textGradient: '45deg, $blue600 -20%, $pink600 50%'
-          }}
-          weight="bold"
-        >
-          The Finesse Exchange
+        <Text h1 className="text-center" weight="bold">
+          Welcome home, to the Finesse exchange.
         </Text>
         {isLoading ? (
           <div className="text-center">
-            <Loading />
+            <Loading size="lg" color="secondary" />
           </div>
         ) : (
           <div className="mt-12">
@@ -118,7 +110,13 @@ const ExchangeScreen = () => {
                           src={song.coverImgURL}
                         />
                       </Table.Cell>
-                      <Table.Cell>{song.title}</Table.Cell>
+                      <Table.Cell>
+                        <Link href={`/song/${song.address}}`}>
+                          <span className="text-white cursor-pointer hover:underline">
+                            {song.title}
+                          </span>
+                        </Link>
+                      </Table.Cell>
                       <Table.Cell>
                         <Link
                           color="secondary"
@@ -130,9 +128,11 @@ const ExchangeScreen = () => {
                         </Link>
                       </Table.Cell>
                       <Table.Cell>
-                        <Button color="gradient" size="xs">
-                          Trade
-                        </Button>
+                        <Link href={`/song/${song.address}}`}>
+                          <Button color="secondary" size="xs">
+                            Trade
+                          </Button>
+                        </Link>
                       </Table.Cell>
                     </Table.Row>
                   );
