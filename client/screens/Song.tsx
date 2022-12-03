@@ -1,13 +1,15 @@
 import { darkTheme, SwapWidget } from '@uniswap/widgets';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { Button, Text } from '@nextui-org/react';
+import { useEffect, useRef, useState } from 'react';
+import { Button, Card, Loading, Text, Textarea } from '@nextui-org/react';
 import { ethers } from 'ethers';
 import Image from 'next/image';
 import { SONG_ADDRESSES, SONG_CONTRACTS } from '../constants';
 import { useAuth } from '../context/AuthContext';
 import useWalletBalance from '../hooks/useWalletBalance';
+import useBiconomy from '../hooks/useBiconomy';
+import { formatSolidityTimestamp } from '../utils';
 
 const jsonRpcUrlMap = {
   80001: [
@@ -31,8 +33,14 @@ const SongScreen = () => {
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [tokenBalance, setTokenBalance] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [discussions, setDiscussions] = useState<any[]>([]);
+  const [isPosting, setIsPosting] = useState(false);
+
+  const textAreaRef = useRef<any>(null);
 
   const { fetchTokenBalance } = useWalletBalance();
+  const { postDiscussion, fetchDiscussions } = useBiconomy();
 
   useEffect(() => {
     if (!isReady) return;
@@ -62,6 +70,9 @@ const SongScreen = () => {
       const data = await res.json();
       const imgURL = data.coverImgURL;
       setSongCoverURL(imgURL);
+
+      const fetchedDiscussions = await fetchDiscussions(songAddress as string);
+      setDiscussions([...fetchedDiscussions]);
     };
 
     onLoad();
@@ -84,6 +95,15 @@ const SongScreen = () => {
 
     calculateHoldings();
   }, [isReady, signerAddress]);
+
+  async function addDiscussion() {
+    textAreaRef.current.value = '';
+    setIsPosting(true);
+    await postDiscussion(songAddress as string, textAreaRef.current.value);
+    const fetchedDiscussions = await fetchDiscussions(songAddress as string);
+    setDiscussions([...fetchedDiscussions]);
+    setIsPosting(false);
+  }
 
   return (
     <div className="min-h-screen py-8 px-24">
@@ -131,6 +151,54 @@ const SongScreen = () => {
 
           <div className="mt-12">
             <Text h3>Discussions</Text>
+            {isConnected() &&
+              (isPosting ? (
+                <Loading />
+              ) : (
+                <div className="w-full flex items-center">
+                  <Textarea
+                    className="flex-1"
+                    onChange={(e) => {
+                      if (e.target.value === '') setIsButtonDisabled(true);
+                      else setIsButtonDisabled(false);
+                    }}
+                    ref={textAreaRef}
+                    width="100%"
+                    label="Write your thoughts"
+                    placeholder="Start a discussion around this song..."
+                  />
+                  <Button
+                    className="ml-4"
+                    size="md"
+                    disabled={isButtonDisabled}
+                    onClick={addDiscussion}
+                  >
+                    Post
+                  </Button>
+                </div>
+              ))}
+            <div className="py-2 px-4">
+              {discussions
+                .slice(0)
+                .reverse()
+                .map((dc) => {
+                  return (
+                    <div
+                      className="my-4"
+                      key={Number(ethers.utils.formatEther(dc.id))}
+                    >
+                      <Card>
+                        <Card.Header>{dc.author}</Card.Header>
+                        <Card.Body>{dc.text}</Card.Body>
+                        <Card.Footer>
+                          {/* TODO: Fix absurd timestamp */}
+                          {formatSolidityTimestamp(dc.createdAt)}
+                        </Card.Footer>
+                      </Card>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         </div>
         <div className="w-1/4">
