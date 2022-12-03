@@ -29,6 +29,7 @@ const SongScreen = () => {
   const [songCoverURL, setSongCoverURL] = useState<string>('');
   const [songTitle, setSongTitle] = useState('');
   const [songArtist, setSongArtist] = useState('');
+  const [spotifyURI, setSpotifyURI] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
@@ -57,11 +58,13 @@ const SongScreen = () => {
       const geniusID = await tokenContract.geniusID();
       const name = await tokenContract.name();
       const symbol = await tokenContract.symbol();
+      const _spotifyURI = await tokenContract.spotifyURI();
 
       setSongTitle(title);
       setSongArtist(artist);
       setTokenName(name);
       setTokenSymbol(symbol);
+      setSpotifyURI(_spotifyURI);
 
       const res = await fetch(
         // @ts-ignore
@@ -140,7 +143,7 @@ const SongScreen = () => {
                 <Text h4>{songArtist}</Text>
               </div>
               {isConnected() && (
-                <div>
+                <div className="flex flex-col">
                   <Text h2>
                     {tokenBalance} {tokenSymbol}
                   </Text>
@@ -201,7 +204,7 @@ const SongScreen = () => {
             </div>
           </div>
         </div>
-        <div className="w-1/4">
+        <div className="w-1/4 flex flex-col items-center">
           {tokenName && tokenSymbol && (
             <div className="Uniswap">
               <SwapWidget
@@ -234,6 +237,20 @@ const SongScreen = () => {
                 defaultOutputAmount={1}
                 defaultOutputTokenAddress={songAddress}
               />
+            </div>
+          )}
+          {spotifyURI && (
+            <div className="mt-12">
+              <iframe
+                style={{ borderRadius: '12px' }}
+                src={`https://open.spotify.com/embed/track/${spotifyURI}?utm_source=generator&theme=0`}
+                width="100%"
+                height="352"
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              ></iframe>
             </div>
           )}
         </div>
