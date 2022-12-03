@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .chat__Button-sc-1nrfhfd-1 {
+        visibility: hidden;
+    }
+}
