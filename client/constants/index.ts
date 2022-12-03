@@ -22,3 +22,18 @@ export const SONG_CONTRACTS = [
   TaylorSwiftBlankSpace,
   TaylorSwiftShakeItOff
 ];
+
+export const SONG_ARTISTS_KEYS = [
+  'Drake',
+  'Drake',
+  'Eminem',
+  'Eminem',
+  'Taylor-Swift',
+  'Taylor-Swift'
+];
+
+export const ARTIST_GENIUS_IDs = {
+  Drake: 130,
+  Eminem: 45,
+  ['Taylor-Swift']: 1177
+};

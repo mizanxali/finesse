@@ -7,23 +7,20 @@ import { ethers } from 'ethers';
 import useUniswap from '../hooks/useUniswap';
 
 import { SONG_ADDRESSES, SONG_CONTRACTS } from '../constants';
+import { useAuth } from '../context/AuthContext';
+import Link from 'next/link';
 
 const ExchangeScreen = () => {
   const Router = useRouter();
 
-  const [provider, setProvider] = useState<any>(undefined);
-  const [signer, setSigner] = useState<any>(undefined);
-  const [signerAddress, setSignerAddress] = useState<any>(undefined);
+  const { provider, signerAddress, getSigner, isConnected, getWalletAddress } =
+    useAuth();
 
   const [songs, setSongs] = useState<ISong[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const onLoad = async () => {
-      //@ts-ignore
-      const provider = await new ethers.providers.Web3Provider(window.ethereum);
-      setProvider(provider);
-
       setIsLoading(true);
 
       let tokenContract;
@@ -43,7 +40,7 @@ const ExchangeScreen = () => {
         const artist = await tokenContract.artistName();
         const geniusID = await tokenContract.geniusID();
 
-        const res = await fetch(`/api/genius?geniusID=${geniusID}`);
+        const res = await fetch(`/api/genius-song?geniusID=${geniusID}`);
         const data = await res.json();
         const coverImgURL = data.coverImgURL;
 
@@ -68,24 +65,6 @@ const ExchangeScreen = () => {
 
     onLoad();
   }, []);
-
-  const getSigner = async (provider: any) => {
-    provider.send('eth_requestAccounts', []);
-    const signer = provider.getSigner();
-    setSigner(signer);
-  };
-
-  const isConnected = () => signer !== undefined;
-
-  const getWalletAddress = () => {
-    signer.getAddress().then((address: any) => {
-      setSignerAddress(address);
-    });
-  };
-
-  if (signer !== undefined) {
-    getWalletAddress();
-  }
 
   return (
     <div className="min-h-screen py-8 px-60">
@@ -137,7 +116,13 @@ const ExchangeScreen = () => {
                       />
                     </Table.Cell>
                     <Table.Cell>{song.title}</Table.Cell>
-                    <Table.Cell>{song.artist}</Table.Cell>
+                    <Table.Cell>
+                      <Link href={`/artist/${song.artist.replace(' ', '-')}`}>
+                        <span className="cursor-pointer hover:underline">
+                          {song.artist}
+                        </span>
+                      </Link>
+                    </Table.Cell>
                     <Table.Cell>
                       <Button size="xs">Trade</Button>
                     </Table.Cell>

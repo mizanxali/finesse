@@ -9,6 +9,12 @@ module.exports = {
     colors: {
       background: '#1F1F1F',
       primary: '#CB2D3E',
+      iron: '#4F4E4F',
+      bronze: '#7A5102',
+      silver: '#AEB2B1',
+      gold: '#DC9724',
+      platinum: '#3597A7',
+      diamond: '#D780EA',
       white: '#fff',
       black: '#000',
       gray: {
