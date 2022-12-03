@@ -11,6 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { Player } from '@livepeer/react';
 import { ethers } from 'ethers';
 import { Chat } from '@pushprotocol/uiweb';
 import { ToastContainer, toast } from 'react-toastify';
@@ -57,7 +58,15 @@ const ArtistScreen = () => {
 
   const { mintNFTConcertTicket, mintArtistNFT } = useNFTPort();
 
-  const { setVisible, bindings } = useModal();
+  const {
+    setVisible: setGoldTierModalVisible,
+    bindings: goldTierModalBindings
+  } = useModal();
+
+  const {
+    setVisible: setDiamondTierModalVisible,
+    bindings: diamondTierModalBindings
+  } = useModal();
 
   useEffect(() => {
     if (!isReady) return;
@@ -168,7 +177,7 @@ const ArtistScreen = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Modal scroll fullScreen closeButton {...bindings}>
+      <Modal scroll fullScreen closeButton {...diamondTierModalBindings}>
         <Modal.Header>
           <Text id="modal-title" size={18}>
             Video Call with {artistName}
@@ -176,6 +185,21 @@ const ArtistScreen = () => {
         </Modal.Header>
         <Modal.Body>
           <HuddleIframe config={iframeConfig} />
+        </Modal.Body>
+      </Modal>
+
+      <Modal scroll fullScreen closeButton {...goldTierModalBindings}>
+        <Modal.Header>
+          <Text id="modal-title" size={18}>
+            Live Stream by {artistName}
+          </Text>
+        </Modal.Header>
+        <Modal.Body>
+          <Player
+            title="Drake Live Stream"
+            playbackId="65b5ry3fu8o4fc3q"
+            showPipButton
+          />
         </Modal.Body>
       </Modal>
 
@@ -358,7 +382,11 @@ const ArtistScreen = () => {
                     </Card.Body>
                     {isConnected() && !isLoading && (
                       <Card.Footer className="flex justify-end">
-                        <Button size="xs" color="gradient">
+                        <Button
+                          onClick={() => setGoldTierModalVisible(true)}
+                          size="xs"
+                          color="gradient"
+                        >
                           Claim
                         </Button>
                       </Card.Footer>
@@ -405,7 +433,7 @@ const ArtistScreen = () => {
                     {isConnected() && !isLoading && (
                       <Card.Footer className="flex justify-end">
                         <Button
-                          onClick={() => setVisible(true)}
+                          onClick={() => setDiamondTierModalVisible(true)}
                           size="xs"
                           color="gradient"
                         >
