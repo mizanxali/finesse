@@ -1,18 +1,69 @@
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
-import { Text, Table, Button } from '@nextui-org/react';
+import { Text, Table, Button, Loading } from '@nextui-org/react';
 import { ethers } from 'ethers';
+import useUniswap from '../hooks/useUniswap';
+
+import { SONG_ADDRESSES, SONG_CONTRACTS } from '../constants';
 
 const ExchangeScreen = () => {
+  const Router = useRouter();
+
   const [provider, setProvider] = useState<any>(undefined);
   const [signer, setSigner] = useState<any>(undefined);
   const [signerAddress, setSignerAddress] = useState<any>(undefined);
+
+  const [songs, setSongs] = useState<ISong[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const onLoad = async () => {
       //@ts-ignore
       const provider = await new ethers.providers.Web3Provider(window.ethereum);
       setProvider(provider);
+
+      setIsLoading(true);
+
+      let tokenContract;
+
+      const fetchedSongs: ISong[] = [];
+
+      for await (const songAddr of SONG_ADDRESSES) {
+        console.log(songAddr);
+
+        tokenContract = new ethers.Contract(
+          songAddr,
+          SONG_CONTRACTS[SONG_ADDRESSES.indexOf(songAddr)].abi,
+          provider
+        );
+
+        const title = await tokenContract.songName();
+        const artist = await tokenContract.artistName();
+        const geniusID = await tokenContract.geniusID();
+
+        const res = await fetch(`/api/genius?geniusID=${geniusID}`);
+        const data = await res.json();
+        const coverImgURL = data.coverImgURL;
+
+        // const spotPrice = await fetchSpotPrice(songAddr);
+
+        const song: ISong = {
+          address: songAddr,
+          title,
+          artist,
+          coverImgURL: coverImgURL,
+          spotPrice: 0
+        };
+
+        fetchedSongs.push(song);
+      }
+
+      console.log('done', fetchedSongs);
+
+      setSongs([...fetchedSongs]);
+      setIsLoading(false);
     };
 
     onLoad();
@@ -46,9 +97,9 @@ const ExchangeScreen = () => {
 
       <div>
         {isConnected() ? (
-          <>
+          <div className="text-center">
             <Text h6>{signerAddress}</Text>
-          </>
+          </div>
         ) : (
           <Button className="mx-auto" onClick={() => getSigner(provider)}>
             Connect Wallet
@@ -57,28 +108,56 @@ const ExchangeScreen = () => {
         <Text h1 className="text-center">
           Finesse
         </Text>
-        <Table>
-          <Table.Header>
-            <Table.Column>SONG</Table.Column>
-            <Table.Column>ARTIST</Table.Column>
-            <Table.Column>PRICE (MATIC)</Table.Column>
-          </Table.Header>
-          <Table.Body>
-            <Table.Row key="1">
-              <Table.Cell>Lose Yourself</Table.Cell>
-              <Table.Cell>Eminem</Table.Cell>
-              <Table.Cell>0.0075</Table.Cell>
-            </Table.Row>
-            <Table.Row key="2">
-              <Table.Cell>Rap God</Table.Cell>
-              <Table.Cell>Eminem</Table.Cell>
-              <Table.Cell>0.0075</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
+        {isLoading ? (
+          <div className="text-center">
+            <Loading />
+          </div>
+        ) : (
+          <Table>
+            <Table.Header>
+              <Table.Column>
+                <span className="invisible">COVER</span>
+              </Table.Column>
+              <Table.Column>SONG</Table.Column>
+              <Table.Column>ARTIST</Table.Column>
+              <Table.Column>
+                <span className="invisible">CTA</span>
+              </Table.Column>
+            </Table.Header>
+            <Table.Body>
+              {songs.map((song, index) => {
+                return (
+                  <Table.Row key={index}>
+                    <Table.Cell>
+                      <Image
+                        alt="Song cover art"
+                        width={40}
+                        height={40}
+                        src={song.coverImgURL}
+                      />
+                    </Table.Cell>
+                    <Table.Cell>{song.title}</Table.Cell>
+                    <Table.Cell>{song.artist}</Table.Cell>
+                    <Table.Cell>
+                      <Button size="xs">Trade</Button>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
+            </Table.Body>
+          </Table>
+        )}
       </div>
     </div>
   );
 };
 
 export default ExchangeScreen;
+
+interface ISong {
+  address: string;
+  title: string;
+  artist: string;
+  coverImgURL: string;
+  spotPrice: number;
+}
