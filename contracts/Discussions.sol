@@ -3,7 +3,12 @@
 
 pragma solidity ^0.8.17;
 
-contract Discussions {
+import "@opengsn/contracts/src/ERC2771Recipient.sol";
+
+contract Discussions is ERC2771Recipient {
+    address private trustedForwarder;
+    address payable public owner;
+
     struct Discussion {
         uint256 id;
         address payable author;
@@ -27,12 +32,17 @@ contract Discussions {
         uint256 createdAt
     );
 
+    constructor(address _trustedForwarder) public {
+        trustedForwarder = _trustedForwarder;
+        owner = payable(_msgSender());
+    }
+
     function postDiscussion(address _contractAddress, string calldata _text)
         external
     {
         discussions[nextDiscussionId] = Discussion(
             nextDiscussionId,
-            payable(msg.sender),
+            payable(_msgSender()),
             _text,
             0,
             block.timestamp
@@ -40,7 +50,7 @@ contract Discussions {
         songDiscussions[_contractAddress].push(nextDiscussionId);
         emit DiscussionAdded(
             nextDiscussionId,
-            msg.sender,
+            _msgSender(),
             _text,
             block.timestamp
         );
@@ -73,5 +83,18 @@ contract Discussions {
         }
 
         return _discussions;
+    }
+
+    function setTrustedForwarder(address _trustedForwarder) public onlyOwner {
+        trustedForwarder = _trustedForwarder;
+    }
+
+    function versionRecipient() external pure returns (string memory) {
+        return "1";
+    }
+
+    modifier onlyOwner() {
+        require(_msgSender() == owner, "Only owner can call this function");
+        _;
     }
 }

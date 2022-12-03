@@ -9,3 +9,5 @@ EminemRapGod deployed at: [0x7BAC355fF73C84A36BFf3f41C623658022FaB921](https://m
 TaylorSwiftBlankSpace deployed at: [0x4752cdD6e2E2fdE9EBeafaAa8aAcF664C65Afe18](https://mumbai.polygonscan.com/address/0x4752cdD6e2E2fdE9EBeafaAa8aAcF664C65Afe18)
 
 TaylorSwiftShakeItOff deployed at: [0x98574c58e10ac5b42E19616F63B3AA3D3F7c2138](https://mumbai.polygonscan.com/address/0x98574c58e10ac5b42E19616F63B3AA3D3F7c2138)
+
+Discussions deployed at: [0x8E81c13B639882e0F76b017Ca5D064D5DA3C81F7](https://mumbai.polygonscan.com/address/0x8E81c13B639882e0F76b017Ca5D064D5DA3C81F7)
