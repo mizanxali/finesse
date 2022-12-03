@@ -25,13 +25,20 @@ import {
 import { useAuth } from '../context/AuthContext';
 import useNFTPort from '../hooks/useNFTPort';
 import useWalletBalance from '../hooks/useWalletBalance';
+import useWeb3Storage from '../hooks/useWeb3Storage';
 
 const ArtistScreen = () => {
   const Router = useRouter();
   const { query, isReady } = Router;
 
-  const { provider, signerAddress, getSigner, isConnected, getWalletAddress } =
-    useAuth();
+  const {
+    signer,
+    provider,
+    signerAddress,
+    getSigner,
+    isConnected,
+    getWalletAddress
+  } = useAuth();
 
   const artistName = query.name?.toString().replace('-', ' ');
 
@@ -47,6 +54,7 @@ const ArtistScreen = () => {
   const [artistAddress, setArtistAddress] = useState('');
   const [isArtistVerified, setIsArtistVerified] = useState(false);
   const [isClaimingAnyTier, setIsClaimingAnyTier] = useState(false);
+  const [unreleasedSongURL, setUnreleasedSongURL] = useState('');
   const [iframeConfig, setIFrameConfig] = useState<IframeConfig>({
     roomUrl: '',
     height: '800px',
@@ -55,8 +63,8 @@ const ArtistScreen = () => {
   });
 
   const { fetchTokenBalance } = useWalletBalance();
-
   const { mintNFTConcertTicket, mintArtistNFT } = useNFTPort();
+  const { storeFile, retrieveFile } = useWeb3Storage();
 
   const {
     setVisible: setGoldTierModalVisible,
@@ -98,9 +106,13 @@ const ArtistScreen = () => {
 
       const _isArtistVerified = await tokenContract.isArtistVerified();
       const _artistAddress = await tokenContract.artistAddress();
+      const _unreleasedSongURL = await tokenContract.unreleasedSongURL();
+
+      console.log(_isArtistVerified, _artistAddress, _unreleasedSongURL);
 
       setIsArtistVerified(_isArtistVerified);
       setArtistAddress(_artistAddress);
+      setUnreleasedSongURL(_unreleasedSongURL);
     };
 
     onLoad();
@@ -158,6 +170,44 @@ const ArtistScreen = () => {
     chatButton.click();
   }
 
+  // const [clipFileUrl, setClipFileUrl] = useState<any>(null);
+
+  function openTrackInput() {
+    var inputEl = document.getElementById('track-upload') as HTMLInputElement;
+    inputEl.click();
+  }
+
+  async function onTrackUpload(e: any) {
+    const file = e.target.files[0];
+    // const cid = await storeFile(file, artistName as string);
+    const cid = 'bafybeihn2pbdo44xaktqm3mapllqa5lmujumgpb64md4qiowj632g7etze';
+
+    // @ts-ignore
+    const artistIndex = SONG_ARTISTS_KEYS.indexOf(query.name as string);
+
+    const tokenContract = new ethers.Contract(
+      SONG_ADDRESSES[artistIndex] as string,
+      SONG_CONTRACTS[artistIndex].abi,
+      signer
+    );
+
+    await tokenContract.updateUnreleasedSongURL(cid, {
+      gasPrice: '1000000000'
+    });
+
+    toast('Track successfully uploaded!');
+  }
+
+  async function playUnreleasedSong() {
+    if (!unreleasedSongURL) {
+      toast('Cannot play unreleased song, artist not verified on Finesse yet.');
+      return;
+    }
+
+    const file = await retrieveFile(unreleasedSongURL);
+    window.location.href = `ipfs://${file[0].cid}/${file[0].name}`;
+  }
+
   return (
     <div className="min-h-screen py-8 px-24">
       <ToastContainer
@@ -213,7 +263,7 @@ const ArtistScreen = () => {
         />
       )}
 
-      {isConnected() && !isLoading ? (
+      {isConnected() ? (
         <div className="text-center">
           <Text h6>{signerAddress}</Text>
         </div>
@@ -237,6 +287,26 @@ const ArtistScreen = () => {
             )}
             <div className="pl-10 flex-1">
               <Text h1>{artistName}</Text>
+              {isArtistVerified && artistAddress == signerAddress && (
+                <>
+                  <Text h4>This is you!</Text>
+                  {!unreleasedSongURL && (
+                    <div onClick={openTrackInput}>
+                      <input
+                        type="file"
+                        id="track-upload"
+                        className="w-full h-full hidden"
+                        accept="audio/*"
+                        onChange={onTrackUpload}
+                      />
+                      <Text h6 className="cursor-pointer hover:underline">
+                        Click here to upload your unreleased track for the
+                        Silver Tier.
+                      </Text>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -255,43 +325,46 @@ const ArtistScreen = () => {
                     <Card.Body className="bg-iron">
                       <Text>Mint a personalized artist NFT.</Text>
                     </Card.Body>
-                    {isConnected() && !isLoading && artistName && (
-                      <Card.Footer className="flex justify-end">
-                        {isIronTierClaimed ? (
-                          <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={
-                              localStorage.getItem(
-                                `${artistName}${signerAddress}irontier`
-                              ) as string
-                            }
-                          >
-                            <Button size="xs" color="gradient">
-                              View NFT
+                    {isConnected() &&
+                      !isLoading &&
+                      artistName &&
+                      artistAddress != signerAddress && (
+                        <Card.Footer className="flex justify-end">
+                          {isIronTierClaimed ? (
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={
+                                localStorage.getItem(
+                                  `${artistName}${signerAddress}irontier`
+                                ) as string
+                              }
+                            >
+                              <Button size="xs" color="gradient">
+                                View NFT
+                              </Button>
+                            </a>
+                          ) : (
+                            <Button
+                              onClick={() => {
+                                setIsClaimingAnyTier(true);
+                                mintArtistNFT(
+                                  artistName,
+                                  artistImageURL,
+                                  signerAddress
+                                ).then(() => {
+                                  setIsClaimingAnyTier(false);
+                                  setIsIronTierClaimed(true);
+                                });
+                              }}
+                              size="xs"
+                              color="gradient"
+                            >
+                              Claim
                             </Button>
-                          </a>
-                        ) : (
-                          <Button
-                            onClick={() => {
-                              setIsClaimingAnyTier(true);
-                              mintArtistNFT(
-                                artistName,
-                                artistImageURL,
-                                signerAddress
-                              ).then(() => {
-                                setIsClaimingAnyTier(false);
-                                setIsIronTierClaimed(true);
-                              });
-                            }}
-                            size="xs"
-                            color="gradient"
-                          >
-                            Claim
-                          </Button>
-                        )}
-                      </Card.Footer>
-                    )}
+                          )}
+                        </Card.Footer>
+                      )}
                   </Card>
                 </div>
                 <div className="">
@@ -306,43 +379,46 @@ const ArtistScreen = () => {
                         Mint one free NFT ticket to {artistName}'s next concert.
                       </Text>
                     </Card.Body>
-                    {isConnected() && !isLoading && artistName && (
-                      <Card.Footer className="flex justify-end">
-                        {isBronzeTierClaimed ? (
-                          <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={
-                              localStorage.getItem(
-                                `${artistName}${signerAddress}bronzetier`
-                              ) as string
-                            }
-                          >
-                            <Button size="xs" color="gradient">
-                              View NFT
+                    {isConnected() &&
+                      !isLoading &&
+                      artistName &&
+                      artistAddress != signerAddress && (
+                        <Card.Footer className="flex justify-end">
+                          {isBronzeTierClaimed ? (
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={
+                                localStorage.getItem(
+                                  `${artistName}${signerAddress}bronzetier`
+                                ) as string
+                              }
+                            >
+                              <Button size="xs" color="gradient">
+                                View NFT
+                              </Button>
+                            </a>
+                          ) : (
+                            <Button
+                              onClick={() => {
+                                setIsClaimingAnyTier(true);
+                                mintNFTConcertTicket(
+                                  artistName,
+                                  artistImageURL,
+                                  signerAddress
+                                ).then(() => {
+                                  setIsClaimingAnyTier(false);
+                                  setIsBronzeTierClaimed(true);
+                                });
+                              }}
+                              size="xs"
+                              color="gradient"
+                            >
+                              Claim
                             </Button>
-                          </a>
-                        ) : (
-                          <Button
-                            onClick={() => {
-                              setIsClaimingAnyTier(true);
-                              mintNFTConcertTicket(
-                                artistName,
-                                artistImageURL,
-                                signerAddress
-                              ).then(() => {
-                                setIsClaimingAnyTier(false);
-                                setIsBronzeTierClaimed(true);
-                              });
-                            }}
-                            size="xs"
-                            color="gradient"
-                          >
-                            Claim
-                          </Button>
-                        )}
-                      </Card.Footer>
-                    )}
+                          )}
+                        </Card.Footer>
+                      )}
                   </Card>
                 </div>
                 <div className="">
@@ -354,17 +430,23 @@ const ArtistScreen = () => {
                     <Card.Header className="">Silver Tier</Card.Header>
                     <Card.Body className="bg-silver">
                       <Text>
-                        Mint an unreleased song from {artistName} as an
-                        exclusive NFT.
+                        Listen to an exclusive unreleased song from {artistName}
+                        .
                       </Text>
                     </Card.Body>
-                    {isConnected() && !isLoading && (
-                      <Card.Footer className="flex justify-end">
-                        <Button size="xs" color="gradient">
-                          Claim
-                        </Button>
-                      </Card.Footer>
-                    )}
+                    {isConnected() &&
+                      !isLoading &&
+                      artistAddress != signerAddress && (
+                        <Card.Footer className="flex justify-end">
+                          <Button
+                            onClick={playUnreleasedSong}
+                            size="xs"
+                            color="gradient"
+                          >
+                            Claim
+                          </Button>
+                        </Card.Footer>
+                      )}
                   </Card>
                 </div>
                 <div className="">
@@ -380,17 +462,19 @@ const ArtistScreen = () => {
                         stream from {artistName}.
                       </Text>
                     </Card.Body>
-                    {isConnected() && !isLoading && (
-                      <Card.Footer className="flex justify-end">
-                        <Button
-                          onClick={() => setGoldTierModalVisible(true)}
-                          size="xs"
-                          color="gradient"
-                        >
-                          Claim
-                        </Button>
-                      </Card.Footer>
-                    )}
+                    {isConnected() &&
+                      !isLoading &&
+                      artistAddress != signerAddress && (
+                        <Card.Footer className="flex justify-end">
+                          <Button
+                            onClick={() => setGoldTierModalVisible(true)}
+                            size="xs"
+                            color="gradient"
+                          >
+                            Claim
+                          </Button>
+                        </Card.Footer>
+                      )}
                   </Card>
                 </div>
                 <div className="">
@@ -405,17 +489,19 @@ const ArtistScreen = () => {
                         Get to chat with {artistName} via text messaging.
                       </Text>
                     </Card.Body>
-                    {isConnected() && !isLoading && (
-                      <Card.Footer className="flex justify-end">
-                        <Button
-                          onClick={openChatBox}
-                          size="xs"
-                          color="gradient"
-                        >
-                          Claim
-                        </Button>
-                      </Card.Footer>
-                    )}
+                    {isConnected() &&
+                      !isLoading &&
+                      artistAddress != signerAddress && (
+                        <Card.Footer className="flex justify-end">
+                          <Button
+                            onClick={openChatBox}
+                            size="xs"
+                            color="gradient"
+                          >
+                            Claim
+                          </Button>
+                        </Card.Footer>
+                      )}
                   </Card>
                 </div>
                 <div className="">
@@ -430,17 +516,19 @@ const ArtistScreen = () => {
                         Get on a 15 minute video call with {artistName}.
                       </Text>
                     </Card.Body>
-                    {isConnected() && !isLoading && (
-                      <Card.Footer className="flex justify-end">
-                        <Button
-                          onClick={() => setDiamondTierModalVisible(true)}
-                          size="xs"
-                          color="gradient"
-                        >
-                          Claim
-                        </Button>
-                      </Card.Footer>
-                    )}
+                    {isConnected() &&
+                      !isLoading &&
+                      artistAddress != signerAddress && (
+                        <Card.Footer className="flex justify-end">
+                          <Button
+                            onClick={() => setDiamondTierModalVisible(true)}
+                            size="xs"
+                            color="gradient"
+                          >
+                            Claim
+                          </Button>
+                        </Card.Footer>
+                      )}
                   </Card>
                 </div>
               </div>

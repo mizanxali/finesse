@@ -52,7 +52,8 @@ export const AuthContextProvider = ({
         signerAddress,
         getSigner,
         isConnected,
-        getWalletAddress
+        getWalletAddress,
+        signer
       }}
     >
       {loading ? null : children}

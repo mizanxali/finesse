@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import useWalletBalance from '../hooks/useWalletBalance';
 import useBiconomy from '../hooks/useBiconomy';
 import { formatSolidityTimestamp } from '../utils';
+import Link from 'next/link';
 
 const jsonRpcUrlMap = {
   80001: [
@@ -140,7 +141,11 @@ const SongScreen = () => {
             <div className="pl-10 flex-1 flex flex-row justify-between">
               <div>
                 <Text h1>{songTitle}</Text>
-                <Text h4>{songArtist}</Text>
+                <Link href={`/artist/${songArtist.replace(' ', '-')}`}>
+                  <Text h4 className="hover:underline">
+                    {songArtist}
+                  </Text>
+                </Link>
               </div>
               {isConnected() && (
                 <div className="flex flex-col">
