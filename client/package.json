@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@huddle01/huddle01-iframe": "^0.0.8",
     "@nextui-org/react": "^1.0.0-beta.10",
     "@pushprotocol/restapi": "0.2.1",
     "@pushprotocol/uiweb": "0.2.3",
