@@ -15,11 +15,7 @@ const HomeScreen = () => {
       </Head>
 
       <div className="">
-        <video
-          src={'/bgvideo.mp4'}
-          autoPlay
-          muted
-          loop
+        <div
           style={{
             objectFit: 'cover',
             width: '100%',
@@ -27,9 +23,19 @@ const HomeScreen = () => {
             position: 'fixed',
             opacity: 0.3,
             zIndex: 0,
-            filter: 'blur(10px)'
+            transform: ' translate(-50%, -50%) rotate(-45deg)'
           }}
-        ></video>
+        >
+          {[...Array(100)].map(() => {
+            return (
+              <div className="flex flex-row overflow-visible">
+                {[...Array(100)].map(() => (
+                  <Text size="$2xl"> FINESSE </Text>
+                ))}
+              </div>
+            );
+          })}
+        </div>
 
         <div
           className="relative z-10 top-40 text-center px-24"
