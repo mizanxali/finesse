@@ -31,7 +31,7 @@ const SilverTierCard = ({
         css={{ height: '100%' }}
         variant="flat"
       >
-        <Card.Header className="">Silver Tier</Card.Header>
+        <Card.Header className="">Silver Tier - 50 coins</Card.Header>
         <Card.Body className="bg-silver">
           <Text weight="extrabold">
             Listen to an exclusive unreleased song from {artistName}.

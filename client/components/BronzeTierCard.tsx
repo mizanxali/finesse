@@ -28,7 +28,7 @@ const BronzeTierCard = ({
         css={{ height: '100%' }}
         variant="flat"
       >
-        <Card.Header className="">Bronze Tier</Card.Header>
+        <Card.Header className="">Bronze Tier - 25 coins</Card.Header>
         <Card.Body className="bg-bronze">
           <Text weight="extrabold">
             Mint one free NFT ticket to {artistName}'s next concert.

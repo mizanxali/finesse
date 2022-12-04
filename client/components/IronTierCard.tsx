@@ -28,7 +28,7 @@ const IronTierCard = ({
         css={{ height: '100%' }}
         variant="flat"
       >
-        <Card.Header className="">Iron Tier</Card.Header>
+        <Card.Header className="">Iron Tier - 10 coins</Card.Header>
         <Card.Body className="bg-iron">
           <Text weight="extrabold">Mint a personalized artist NFT.</Text>
         </Card.Body>

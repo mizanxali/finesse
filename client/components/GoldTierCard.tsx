@@ -35,7 +35,7 @@ const GoldTierCard = ({
         css={{ height: '100%' }}
         variant="flat"
       >
-        <Card.Header className="">Gold Tier</Card.Header>
+        <Card.Header className="">Gold Tier - 100 coins</Card.Header>
         <Card.Body className="bg-gold">
           <Text weight="extrabold">
             Get access to a special Gold tier holders-only live stream from{' '}

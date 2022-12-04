@@ -53,7 +53,7 @@ const DiamondTierCard = ({
         css={{ height: '100%' }}
         variant="flat"
       >
-        <Card.Header className="">Diamond Tier</Card.Header>
+        <Card.Header className="">Diamond Tier - 500 coins</Card.Header>
         <Card.Body className="bg-diamond">
           <Text weight="extrabold">
             Get on a 15 minute video call with {artistName}.

@@ -50,7 +50,7 @@ const HomeScreen = () => {
           />
           <Text h1 className="mt-12">
             A DeFi-powered ecosystem for fans to get exclusive access to their
-            favorite music artists and songs.
+            favorite songs and music artists.
           </Text>
           <Link href="/exchange">
             <Button className="mx-auto mt-12" color="secondary" size="lg">

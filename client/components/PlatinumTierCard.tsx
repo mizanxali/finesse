@@ -39,7 +39,7 @@ const PlatinumTierCard = ({
         css={{ height: '100%' }}
         variant="flat"
       >
-        <Card.Header className="">Platinum Tier</Card.Header>
+        <Card.Header className="">Platinum Tier - 250 coins</Card.Header>
         <Card.Body className="bg-platinum">
           <Text weight="extrabold">
             Get to chat with {artistName} via text messaging.
