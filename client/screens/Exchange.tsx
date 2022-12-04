@@ -111,7 +111,7 @@ const ExchangeScreen = () => {
                         />
                       </Table.Cell>
                       <Table.Cell>
-                        <Link href={`/song/${song.address}}`}>
+                        <Link href={`/song/${song.address}`}>
                           <span className="text-white cursor-pointer hover:underline">
                             {song.title}
                           </span>
@@ -128,7 +128,7 @@ const ExchangeScreen = () => {
                         </Link>
                       </Table.Cell>
                       <Table.Cell>
-                        <Link href={`/song/${song.address}}`}>
+                        <Link href={`/song/${song.address}`}>
                           <Button color="secondary" size="xs">
                             Trade
                           </Button>

@@ -66,7 +66,7 @@ export default function Navbar() {
           Eminem
         </Text>
       </Link>
-      {isConnected() ? (
+      {isConnected() && signerAddress ? (
         <div className="text-center">
           <Text h6>{`${signerAddress.slice(0, 4)}...${signerAddress.slice(
             -4
@@ -112,7 +112,7 @@ export default function Navbar() {
             Eminem
           </Text>
         </Link>
-        {isConnected() ? (
+        {isConnected() && signerAddress ? (
           <div className="text-center">
             <Text h6 className="m-0 p-0">{`${signerAddress.slice(
               0,
