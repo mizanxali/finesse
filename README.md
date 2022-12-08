@@ -38,8 +38,24 @@ TaylorSwiftShakeItOff deployed at: [0x98574c58e10ac5b42E19616F63B3AA3D3F7c2138](
 
 Discussions deployed at: [0x8E81c13B639882e0F76b017Ca5D064D5DA3C81F7](https://mumbai.polygonscan.com/address/0x8E81c13B639882e0F76b017Ca5D064D5DA3C81F7)
 
-## BUIDL Partners
+## Project Gallery
+<p align="center">
+<img src="https://github.com/mizanxali/finesse/blob/main/screenshots/ss1.png" alt="drawing" width="700"/>
+</p>
+<p align="center">
+<img src="https://github.com/mizanxali/finesse/blob/main/screenshots/ss2.png" alt="drawing" width="700"/>
+</p>
+<p align="center">
+<img src="https://github.com/mizanxali/finesse/blob/main/screenshots/ss3.png" alt="drawing" width="700"/>
+</p>
+<p align="center">
+<img src="https://github.com/mizanxali/finesse/blob/main/screenshots/ss4.png" alt="drawing" width="700"/>
+</p>
+<p align="center">
+<img src="https://github.com/mizanxali/finesse/blob/main/screenshots/ss5.png" alt="drawing" width="700"/>
+</p>
 
+## BUIDL Partners
 ### Polygon
 Finesse is built and deployed on the Polygon Mumbai testnet. All song coins are ERC20 tokens minted on Polygon. All smart contracts including the gasless transactions-compliant contract, are all deployed on Polygon testnet. The Uniswap liquidity pool are also on Polygon and users trade MATIC for the song coins on Finesse.
 
